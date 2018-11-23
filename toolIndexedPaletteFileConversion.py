@@ -1,6 +1,7 @@
 #toolIndexedPaletteFileConversion.py
 #(C) 2018 Robin Pruss
 
+import io
 import re
 
 
@@ -23,6 +24,18 @@ def setupRegex(bird):
         ''', re.I | re.X)
 
 
+def chooseFiles(bird):
+    bird.fromFileName = r'C:\TEMP\ugcolor.cdf'
+    bird.toFileName = r'C:\TEMP\ugcolor_01.gpl'
+    pass
+
+
+def prepareFiles(bird):
+    bird.fromFile = io.open(bird.fromFileName, "r", encoding="utf-8")
+    bird.toFile = io.open(bird.toFileName, "w", encoding="utf-8")
+    pass
+
+
 def convertColor1to255(color1):
     color255 = round(color1*255.0)
     return(color255)
@@ -36,6 +49,10 @@ def convertColor255to1(color255):
 def main():
     bird = birdClass()
     setupRegex(bird)
+    chooseFiles(bird)
+    prepareFiles(bird)
+    bird.fromFile.close()
+    bird.toFile.close()
     print('done')
 
 
