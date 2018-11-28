@@ -75,7 +75,19 @@ def readDataFromCDF(bird):
     bird.fromLineList = bird.fromFile.readlines()
     bird.fromFile.close()
     bird.toLineList = []
-    bird.totalColors = 0
+    for tempLine in bird.fromLineList:
+        tempIn = bird.cdfInput.search(tempLine)
+        if tempIn:
+            newDesc = tempIn.group('rawDesc').rstrip()
+            newR = convertColor1to255(float(tempIn.group('rawR')))
+            newG = convertColor1to255(float(tempIn.group('rawG')))
+            newB = convertColor1to255(float(tempIn.group('rawB')))
+            newOut = str(newR).ljust(4) + \
+                    str(newG).ljust(4) + \
+                    str(newB).ljust(4) + \
+                    newDesc + '\n'
+            bird.toLineList.append(newOut)
+    bird.totalColors = len(bird.toLineList)
     print('readDataFromCDF ok')
 
 
