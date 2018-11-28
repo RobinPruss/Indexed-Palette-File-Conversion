@@ -33,7 +33,6 @@ def setupRegex(bird):
 
 
 def chooseFiles(bird):
-    
     foundFiles = []
     while foundFiles == []:
         tempPathName = input('Enter a folder path with .cdf files >> ')
@@ -49,10 +48,11 @@ def chooseFiles(bird):
         for y, z in enumerate(foundFiles):
             print(str(y), ' ', z)
         x = int(input('Which of these files? >> '))
+    bird.baseName = foundFiles[x]
     bird.fromFileName = os.path.join(tempPathName, 
-                                     foundFiles[x] + '.cdf')
+                                     bird.baseName + '.cdf')
     bird.toFileName = os.path.join(tempPathName, 
-                                   foundFiles[x] + '.gpl')
+                                   bird.baseName + '.gpl')
 
 
 def prepareFiles(bird):
@@ -71,6 +71,31 @@ def convertColor255to1(color255):
     return(color1)
 
 
+def readDataFromCDF(bird):
+    bird.fromLineList = bird.fromFile.readlines()
+    bird.fromFile.close()
+    bird.toLineList = []
+    bird.totalColors = 0
+    print('readDataFromCDF ok')
+
+
+def writeDataToGPL(bird):
+    line1 = 'GIMP Palette\n'
+    line2 = '#Palette Name: '  + \
+            bird.baseName.upper() + \
+            '\n'
+    line3 = '#Description: Converted from ' + \
+            bird.baseName +  '.cdf ' + \
+            'using toolIndexedPaletteFileConversion.py\n'
+    line4 = '#Colors: '+  str(bird.totalColors) + '\n'
+    bird.toLineList.insert(0, line1)
+    bird.toLineList.insert(1, line2)
+    bird.toLineList.insert(2, line3)
+    bird.toLineList.insert(3, line4)
+    bird.toFile.writelines(bird.toLineList)
+    bird.toFile.close()
+    
+
 def main():
     print('''Welcome to toolIndexedPaletteFileConversion.py
         Copyright 2018, Robin Pruss
@@ -81,8 +106,10 @@ def main():
         setupRegex(bird)
         chooseFiles(bird)
         prepareFiles(bird)
-        bird.fromFile.close()
-        bird.toFile.close()
+        readDataFromCDF(bird)
+        writeDataToGPL(bird)
+        
+        
         print('done')
     except:
         print('ERROR')
